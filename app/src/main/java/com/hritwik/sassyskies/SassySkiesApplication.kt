@@ -4,7 +4,6 @@ import android.app.Application
 import coil.Coil
 import coil.ImageLoader
 import coil.decode.SvgDecoder
-import com.hritwik.sassyskies.widget.ComposeWidgetScheduler
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -18,7 +17,5 @@ class SassySkiesApplication : Application() {
             }
             .build()
         Coil.setImageLoader(imageLoader)
-
-        ComposeWidgetScheduler.scheduleWidgetUpdates(this)
     }
 }

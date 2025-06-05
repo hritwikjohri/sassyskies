@@ -1,29 +1,33 @@
 package com.hritwik.sassyskies.screen
 
 import android.Manifest
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hritwik.sassyskies.BuildConfig
-import com.hritwik.sassyskies.model.WidgetWeatherData
-import com.hritwik.sassyskies.viewmodel.WeatherViewModel
+import com.hritwik.sassyskies.repositoryImpl.LocationRepositoryImpl
 import com.hritwik.sassyskies.viewmodel.LocationViewModel
 import com.hritwik.sassyskies.viewmodel.LocationViewModelFactory
-import com.hritwik.sassyskies.repositoryImpl.LocationRepositoryImpl
-import com.hritwik.sassyskies.widget.WeatherWidget
-import com.hritwik.sassyskies.widget.WidgetDataManager
-import kotlinx.coroutines.coroutineScope
+import com.hritwik.sassyskies.viewmodel.WeatherViewModel
 
 @Composable
 fun Home(
@@ -32,9 +36,6 @@ fun Home(
     onNavigateToDeveloperInfo: (() -> Unit)? = null,
     onNavigateToForecast: ((Double, Double) -> Unit)? = null
 ) {
-
-
-
     val context = LocalContext.current
 
     val locationRepository = remember { LocationRepositoryImpl(context) }
