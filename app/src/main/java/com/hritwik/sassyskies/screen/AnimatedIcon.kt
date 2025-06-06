@@ -73,7 +73,6 @@ fun AnimatedIcon(
             .build(),
         contentDescription = "Weather icon",
         modifier = animatedModifier,
-        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
     )
 }
 

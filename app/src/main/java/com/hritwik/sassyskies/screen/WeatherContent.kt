@@ -1,3 +1,4 @@
+// Updated WeatherContent.kt
 package com.hritwik.sassyskies.screen
 
 import androidx.compose.foundation.clickable
@@ -158,7 +159,8 @@ fun WeatherContent(
                                 append(word)
                             }
                         } else {
-                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
+                            // Use white color for better visibility on dynamic backgrounds
+                            withStyle(style = SpanStyle(color = Color.White)) {
                                 append(word)
                             }
                         }
@@ -171,12 +173,12 @@ fun WeatherContent(
 
                 Spacer(modifier = Modifier.weight(0.5f))
 
-                // Temperature display
+                // Temperature display with better visibility
                 Text(
                     text = "${weather.main.temp.roundToInt()}°",
                     style = WeatherTypography.MainTemperature,
                     fontWeight = FontWeight.Light,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = Color.White // Enhanced visibility
                 )
 
                 // Dynamic sarcastic message with calculated font size
@@ -221,7 +223,7 @@ private fun WeatherTopAppBar(
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = "Location",
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = Color.White, // Better visibility on dynamic backgrounds
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -230,7 +232,7 @@ private fun WeatherTopAppBar(
                         fontFamily = JosefinSans,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = Color.White, // Better visibility
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -240,51 +242,50 @@ private fun WeatherTopAppBar(
                     fontFamily = JosefinSans,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = Color.White.copy(alpha = 0.8f) // Better visibility
                 )
             }
         },
         actions = {
-            // Add a details button
             IconButton(onClick = onDeveloperInfoClick) {
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = "Dev Details",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = Color.White.copy(alpha = 0.8f)
                 )
             }
             IconButton(onClick = onForecastClick) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = "7-Day Forecast",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = Color.White.copy(alpha = 0.8f)
                 )
             }
             IconButton(onClick = onLocationClick) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = "Change Location",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = Color.White.copy(alpha = 0.8f)
                 )
             }
             IconButton(onClick = onRefreshClick) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     contentDescription = "Refresh Weather",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = Color.White.copy(alpha = 0.8f)
                 )
             }
             IconButton(onClick = onOptionsClick) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "Options",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = Color.White.copy(alpha = 0.8f)
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-            titleContentColor = MaterialTheme.colorScheme.onSurface
+            containerColor = Color.Transparent, // Make top bar transparent
+            titleContentColor = Color.White
         )
     )
 }
@@ -297,7 +298,7 @@ private fun MemeVersionDrawer(
 ) {
     ModalDrawerSheet(
         modifier = Modifier.width(300.dp),
-        drawerContainerColor = MaterialTheme.colorScheme.surface,
+        drawerContainerColor = Color.Transparent.copy(alpha = 0.01f),
         drawerContentColor = MaterialTheme.colorScheme.onSurface
     ) {
         Column(
@@ -387,9 +388,9 @@ private fun MemeVersionOption(
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
             } else {
-                MaterialTheme.colorScheme.surface
+                MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
             }
         ),
         elevation = CardDefaults.cardElevation(
@@ -478,7 +479,7 @@ private fun WeatherBottomBar(
     onDetailedWeatherClick: () -> Unit = {}
 ) {
     BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f), // Semi-transparent
         tonalElevation = 8.dp,
         modifier = Modifier.fillMaxWidth()
     ) {

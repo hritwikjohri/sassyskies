@@ -114,7 +114,6 @@ fun DetailedWeatherScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
