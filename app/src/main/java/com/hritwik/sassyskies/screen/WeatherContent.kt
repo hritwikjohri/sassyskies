@@ -45,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -161,8 +160,7 @@ fun WeatherContent(
                                 append(word)
                             }
                         } else {
-                            // Use white color for better visibility on dynamic backgrounds
-                            withStyle(style = SpanStyle(color = Color.White)) {
+                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onBackground)) {
                                 append(word)
                             }
                         }
@@ -175,12 +173,12 @@ fun WeatherContent(
 
                 Spacer(modifier = Modifier.weight(0.5f))
 
-                // Temperature display with better visibility
+                // Temperature display
                 Text(
                     text = "${weather.main.temp.roundToInt()}°",
                     style = WeatherTypography.MainTemperature,
                     fontWeight = FontWeight.Light,
-                    color = Color.White // Enhanced visibility
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 // Dynamic sarcastic message with calculated font size
@@ -226,7 +224,7 @@ private fun WeatherTopAppBar(
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = "Location",
-                        tint = Color.White, // Better visibility on dynamic backgrounds
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -235,7 +233,7 @@ private fun WeatherTopAppBar(
                         fontFamily = JosefinSans,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White, // Better visibility
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -245,7 +243,7 @@ private fun WeatherTopAppBar(
                     fontFamily = JosefinSans,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
-                    color = Color.White.copy(alpha = 0.8f) // Better visibility
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         },
@@ -254,48 +252,48 @@ private fun WeatherTopAppBar(
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Profile",
-                    tint = Color.White.copy(alpha = 0.8f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onDeveloperInfoClick) {
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = "Dev Details",
-                    tint = Color.White.copy(alpha = 0.8f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onForecastClick) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = "7-Day Forecast",
-                    tint = Color.White.copy(alpha = 0.8f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onLocationClick) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = "Change Location",
-                    tint = Color.White.copy(alpha = 0.8f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onRefreshClick) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     contentDescription = "Refresh Weather",
-                    tint = Color.White.copy(alpha = 0.8f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onOptionsClick) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = "Options",
-                    tint = Color.White.copy(alpha = 0.8f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent, // Make top bar transparent
-            titleContentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface
         )
     )
 }
@@ -308,7 +306,7 @@ private fun MemeVersionDrawer(
 ) {
     ModalDrawerSheet(
         modifier = Modifier.width(300.dp),
-        drawerContainerColor = Color.Transparent.copy(alpha = 0.01f),
+        drawerContainerColor = MaterialTheme.colorScheme.surface,
         drawerContentColor = MaterialTheme.colorScheme.onSurface
     ) {
         Column(
@@ -398,9 +396,9 @@ private fun MemeVersionOption(
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f)
+                MaterialTheme.colorScheme.primaryContainer
             } else {
-                MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                MaterialTheme.colorScheme.surface
             }
         ),
         elevation = CardDefaults.cardElevation(
@@ -445,7 +443,7 @@ private fun MemeVersionOption(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 color = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    MaterialTheme.colorScheme.onPrimaryContainer
                 } else {
                     MaterialTheme.colorScheme.onSurfaceVariant
                 }
@@ -472,9 +470,9 @@ private fun MemeVersionOption(
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Normal,
                     color = if (isSelected) {
-                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                        MaterialTheme.colorScheme.onPrimaryContainer
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                        MaterialTheme.colorScheme.onSurfaceVariant
                     },
                     modifier = Modifier.padding(top = 2.dp, start = 8.dp)
                 )
@@ -489,7 +487,7 @@ private fun WeatherBottomBar(
     onDetailedWeatherClick: () -> Unit = {}
 ) {
     BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f), // Semi-transparent
+        containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 8.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -530,11 +528,10 @@ private fun WeatherDetailButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = Color.Transparent,
+            containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
+        modifier = Modifier.padding(horizontal = 4.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
