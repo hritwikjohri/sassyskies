@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.hritwik.sassyskies" />
+                  <option name="mobileSdkAppId" value="1:431699847485:android:d8c8b4163e143fa33ebd54" />
+                  <option name="projectId" value="sassyskies-419f5" />
+                  <option name="projectNumber" value="431699847485" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

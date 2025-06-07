@@ -34,7 +34,8 @@ fun Home(
     weatherViewModel: WeatherViewModel = hiltViewModel(),
     onNavigateToDetailedWeather: (() -> Unit)? = null,
     onNavigateToDeveloperInfo: (() -> Unit)? = null,
-    onNavigateToForecast: ((Double, Double) -> Unit)? = null
+    onNavigateToForecast: ((Double, Double) -> Unit)? = null,
+    onNavigateToProfile: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
 
@@ -111,6 +112,9 @@ fun Home(
                     locationUiState.location?.let { location ->
                         onNavigateToForecast?.invoke(location.latitude, location.longitude)
                     }
+                },
+                onNavigateToProfile = {
+                    onNavigateToProfile?.invoke()
                 }
             )
         }

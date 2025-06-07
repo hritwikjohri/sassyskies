@@ -1,4 +1,3 @@
-// Updated WeatherContent.kt
 package com.hritwik.sassyskies.screen
 
 import androidx.compose.foundation.clickable
@@ -20,6 +19,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -75,7 +75,8 @@ fun WeatherContent(
     onMemeVersionChanged: (MemeVersion) -> Unit = {},
     onDetailedWeatherClick: () -> Unit = {},
     onDeveloperInfoClick: () -> Unit = {},
-    onForecastClick: () -> Unit = {}
+    onForecastClick: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -117,7 +118,8 @@ fun WeatherContent(
                         scope.launch { drawerState.open() }
                     },
                     onDeveloperInfoClick = onDeveloperInfoClick,
-                    onForecastClick = onForecastClick
+                    onForecastClick = onForecastClick,
+                    onNavigateToProfile = onNavigateToProfile
                 )
             },
             bottomBar = {
@@ -207,7 +209,8 @@ private fun WeatherTopAppBar(
     onLocationClick: () -> Unit,
     onOptionsClick: () -> Unit,
     onDeveloperInfoClick: () -> Unit = {},
-    onForecastClick: () -> Unit
+    onForecastClick: () -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
@@ -247,6 +250,13 @@ private fun WeatherTopAppBar(
             }
         },
         actions = {
+            IconButton(onClick = onNavigateToProfile) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Profile",
+                    tint = Color.White.copy(alpha = 0.8f)
+                )
+            }
             IconButton(onClick = onDeveloperInfoClick) {
                 Icon(
                     imageVector = Icons.Default.Info,

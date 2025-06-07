@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "431699847485",
+    "project_id": "sassyskies-419f5",
+    "storage_bucket": "sassyskies-419f5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431699847485:android:d8c8b4163e143fa33ebd54",
+        "android_client_info": {
+          "package_name": "com.hritwik.sassyskies"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIGUL70o_X5Dhmn-7K1YaO4mXL-g1H15g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
