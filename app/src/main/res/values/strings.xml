@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Sassy Skies</string>
+    <string name="widget_description">Sassy weather widget with attitude</string>
+    <string name="widget_name">Sassy Skies Weather</string>
+    <string name="widget_loading">Getting weather with sass...</string>
+    <string name="widget_error">Weather service is having a moment</string>
+    <string name="widget_refresh">Refresh Weather</string>
+    <string name="widget_open_app">Open Sassy Skies</string>
+</resources>

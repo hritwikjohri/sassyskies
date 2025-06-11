@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "189239465138",
+    "firebase_url": "https://sassyskies-8fedb-default-rtdb.firebaseio.com",
+    "project_id": "sassyskies-8fedb",
+    "storage_bucket": "sassyskies-8fedb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:189239465138:android:f5398785e56168237ca5ab",
+        "android_client_info": {
+          "package_name": "com.hritwik.sassyskies"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_BKMrxaO8mwmijYTtjvC7ypyD4acvDSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
