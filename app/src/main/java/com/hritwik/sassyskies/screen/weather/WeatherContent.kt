@@ -1,4 +1,4 @@
-package com.hritwik.sassyskies.screen
+package com.hritwik.sassyskies.screen.weather
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,10 +51,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hritwik.sassyskies.model.utils.MemeVersion
 import com.hritwik.sassyskies.model.weather.core.WeatherResponse
+import com.hritwik.sassyskies.screen.components.AnimatedIcon
 import com.hritwik.sassyskies.ui.theme.JosefinSans
 import com.hritwik.sassyskies.ui.theme.WeatherTypography
 import kotlinx.coroutines.launch
@@ -547,7 +549,7 @@ private fun WeatherDetailButton(
     }
 }
 
-private fun calculateDynamicFontSize(text: String): androidx.compose.ui.unit.TextUnit {
+private fun calculateDynamicFontSize(text: String): TextUnit {
     val length = text.length
     val wordCount = text.split(" ").size
 

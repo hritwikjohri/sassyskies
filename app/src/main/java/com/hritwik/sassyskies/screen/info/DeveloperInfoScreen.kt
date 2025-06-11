@@ -1,4 +1,4 @@
-package com.hritwik.sassyskies.screen
+package com.hritwik.sassyskies.screen.info
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.hritwik.sassyskies.screen
+package com.hritwik.sassyskies.screen.weather
 
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -13,21 +13,22 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hritwik.sassyskies.model.utils.ErrorStates
 import com.hritwik.sassyskies.viewmodel.WeatherViewModel
 import com.hritwik.sassyskies.viewmodel.LocationViewModel
 import com.hritwik.sassyskies.viewmodel.LocationViewModelFactory
 import com.hritwik.sassyskies.repositoryImpl.LocationRepositoryImpl
+import com.hritwik.sassyskies.screen.components.LocationErrorContent
+import com.hritwik.sassyskies.screen.components.PermissionDeniedContent
+import com.hritwik.sassyskies.screen.components.WeatherErrorContent
 
 @Composable
 fun Home(
     weatherViewModel: WeatherViewModel = hiltViewModel(),
     onNavigateToDetailedWeather: (() -> Unit)? = null,
     onNavigateToDeveloperInfo: (() -> Unit)? = null,
-    onNavigateToForecast: ((Double, Double) -> Unit)? = null
+    onNavigateToForecast: ((Double, Double, ErrorStates) -> Unit)? = null
 ) {
-
-
-
     val context = LocalContext.current
 
     val locationRepository = remember { LocationRepositoryImpl(context) }
@@ -71,6 +72,13 @@ fun Home(
         }
     }
 
+    // Create error states to pass to forecast
+    val errorStates = ErrorStates(
+        hasLocationPermission = hasLocationPermission,
+        locationError = locationUiState.errorMessage,
+        weatherError = weatherUiState.error
+    )
+
     // Use full screen for weather content, centered layout for loading/error states
     when {
         weatherUiState.weatherData != null -> {
@@ -101,20 +109,73 @@ fun Home(
                 },
                 onForecastClick = {
                     locationUiState.location?.let { location ->
-                        onNavigateToForecast?.invoke(location.latitude, location.longitude)
+                        onNavigateToForecast?.invoke(
+                            location.latitude,
+                            location.longitude,
+                            errorStates
+                        )
                     }
                 }
             )
         }
 
         else -> {
-            // Centered content for loading/error states
+            // Centered content for loading/error states with non-blocking overlays
             Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier = Modifier.fillMaxSize()
             ) {
-                when {
-                    !hasLocationPermission -> {
+                // Main loading content
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    when {
+                        locationUiState.isLoading -> {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                CircularProgressIndicator()
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "Getting your location...",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+
+                        weatherUiState.isLoading -> {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                CircularProgressIndicator()
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = "Fetching weather data...",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+
+                        else -> {
+                            // Fallback state
+                            Text(
+                                text = "Initializing...",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+
+                // Non-blocking error overlays
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .padding(top = 50.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Permission Denied Overlay
+                    if (!hasLocationPermission) {
                         PermissionDeniedContent(
                             onRetryPermission = {
                                 permissionLauncher.launch(
@@ -127,23 +188,13 @@ fun Home(
                         )
                     }
 
-                    locationUiState.isLoading -> {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Getting your location...",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                    }
-
-                    locationUiState.errorMessage != null -> {
+                    // Location Error Overlay
+                    locationUiState.errorMessage?.let { error ->
                         LocationErrorContent(
-                            errorMessage = locationUiState.errorMessage!!,
-                            onRetryLocation = { locationViewModel.getCurrentLocation() },
+                            errorMessage = error,
+                            onRetryLocation = {
+                                locationViewModel.getCurrentLocation()
+                            },
                             onUseDefaultLocation = {
                                 // Fallback to New York coordinates
                                 weatherViewModel.getCurrentWeather(40.78, -73.97)
@@ -151,22 +202,12 @@ fun Home(
                         )
                     }
 
-                    weatherUiState.isLoading -> {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = "Fetching weather data...",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                    }
-
-                    weatherUiState.error != null -> {
+                    // Weather Error Overlay
+                    weatherUiState.error?.let { error ->
                         WeatherErrorContent(
-                            sarcasticMessage = weatherUiState.sarcasticMessage,
+                            sarcasticMessage = weatherUiState.sarcasticMessage.ifEmpty {
+                                "Weather API decided to take a coffee break. Typical."
+                            },
                             onRetryWeather = {
                                 locationUiState.location?.let { location ->
                                     weatherViewModel.getCurrentWeather(
@@ -178,14 +219,6 @@ fun Home(
                                     weatherViewModel.getCurrentWeather(40.78, -73.97)
                                 }
                             }
-                        )
-                    }
-
-                    else -> {
-                        // Fallback state
-                        Text(
-                            text = "Initializing...",
-                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }

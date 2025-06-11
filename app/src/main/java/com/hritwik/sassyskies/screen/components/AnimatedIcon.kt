@@ -1,4 +1,4 @@
-package com.hritwik.sassyskies.screen
+package com.hritwik.sassyskies.screen.components
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing

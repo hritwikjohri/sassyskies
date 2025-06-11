@@ -1,7 +1,6 @@
 package com.hritwik.sassyskies.core
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -11,10 +10,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.hritwik.sassyskies.screen.DetailedWeatherScreen
-import com.hritwik.sassyskies.screen.DeveloperInfoScreen
-import com.hritwik.sassyskies.screen.ForecastScreen
-import com.hritwik.sassyskies.screen.Home
+import com.hritwik.sassyskies.screen.weather.DetailedWeatherScreen
+import com.hritwik.sassyskies.screen.info.DeveloperInfoScreen
+import com.hritwik.sassyskies.screen.weather.ForecastScreen
+import com.hritwik.sassyskies.screen.weather.Home
 import com.hritwik.sassyskies.screen.Splash
 import com.hritwik.sassyskies.screen.auth.ApiKeySetupScreen
 import com.hritwik.sassyskies.screen.auth.ForgotPasswordScreen
@@ -30,47 +29,17 @@ fun AppRoute() {
     val authViewModel: AuthViewModel = hiltViewModel()
     val authUiState by authViewModel.uiState.collectAsStateWithLifecycle()
 
-    // Handle navigation based on auth state changes
-    LaunchedEffect(authUiState.isAuthenticated, authUiState.currentUser, authUiState.isLoading) {
-        // Wait for auth loading to complete
-        if (!authUiState.isLoading) {
-            when {
-                authUiState.isAuthenticated && authUiState.currentUser != null -> {
-                    val user = authUiState.currentUser!!
-
-                    if (!user.hasAllApiKeys()) {
-                        // User is authenticated but missing API keys - go to setup
-                        navController.navigate("ApiKeySetup") {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    } else {
-                        // User is authenticated and has API keys - go to home
-                        navController.navigate("Home") {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    }
-                }
-                !authUiState.isAuthenticated -> {
-                    // User is not authenticated - go to login
-                    navController.navigate("Login") {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-                // If still loading, stay on splash
-            }
-        }
-    }
-
     NavHost(
         navController = navController,
-        startDestination = "Splash"
+        startDestination = if (authUiState.isAuthenticated){
+            "Home"
+        } else {
+            "Splash"
+        }
     ) {
-        // Splash Screen - Remove the navigation callback
+        // Splash Screen
         composable("Splash") {
-            Splash {
-                // Remove this navigation - let LaunchedEffect handle it
-                // The splash will automatically navigate based on auth state
-            }
+            Splash()
         }
 
         // Authentication Screens
@@ -129,8 +98,11 @@ fun AppRoute() {
                 onNavigateToDeveloperInfo = {
                     navController.navigate("DeveloperInfo")
                 },
-                onNavigateToForecast = { latitude, longitude ->
-                    navController.navigate("Forecast/$latitude/$longitude")
+                onNavigateToForecast = { latitude, longitude, errorStates ->
+                    // Pass error states as navigation arguments
+                    navController.navigate(
+                        "Forecast/$latitude/$longitude/${errorStates.hasLocationPermission}/${errorStates.locationError ?: "null"}/${errorStates.weatherError ?: "null"}"
+                    )
                 }
             )
         }
@@ -150,14 +122,20 @@ fun AppRoute() {
         }
 
         composable(
-            "Forecast/{latitude}/{longitude}",
+            "Forecast/{latitude}/{longitude}/{hasPermission}/{locationError}/{weatherError}",
             arguments = listOf(
                 navArgument("latitude") { type = NavType.FloatType },
-                navArgument("longitude") { type = NavType.FloatType }
+                navArgument("longitude") { type = NavType.FloatType },
+                navArgument("hasPermission") { type = NavType.BoolType },
+                navArgument("locationError") { type = NavType.StringType },
+                navArgument("weatherError") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble() ?: 0.0
             val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble() ?: 0.0
+            val hasPermission = backStackEntry.arguments?.getBoolean("hasPermission") != false
+            val locationError = backStackEntry.arguments?.getString("locationError")?.takeIf { it != "null" }
+            val weatherError = backStackEntry.arguments?.getString("weatherError")?.takeIf { it != "null" }
 
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry("Home")
@@ -170,7 +148,26 @@ fun AppRoute() {
                 weatherViewModel = weatherViewModel,
                 latitude = latitude,
                 longitude = longitude,
+                hasLocationPermission = hasPermission,
+                locationError = locationError,
+                weatherError = weatherError,
                 onBackClick = {
+                    navController.popBackStack()
+                },
+                onRetryPermission = {
+                    // Navigate back to home to retry permission
+                    navController.popBackStack()
+                },
+                onRetryLocation = {
+                    // Navigate back to home to retry location
+                    navController.popBackStack()
+                },
+                onUseDefaultLocation = {
+                    // Navigate back to home with default location
+                    navController.popBackStack()
+                },
+                onRetryWeather = {
+                    // Navigate back to home to retry weather
                     navController.popBackStack()
                 }
             )

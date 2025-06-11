@@ -1,4 +1,4 @@
-package com.hritwik.sassyskies.screen
+package com.hritwik.sassyskies.screen.weather
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hritwik.sassyskies.model.weather.core.WeatherResponse
+import com.hritwik.sassyskies.screen.components.AnimatedIcon
 import com.hritwik.sassyskies.ui.theme.JosefinSans
 import com.hritwik.sassyskies.viewmodel.WeatherViewModel
 import java.text.SimpleDateFormat

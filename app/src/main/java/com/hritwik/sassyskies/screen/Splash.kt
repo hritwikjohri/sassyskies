@@ -15,12 +15,7 @@ import com.hritwik.sassyskies.ui.theme.JosefinSans
 import kotlinx.coroutines.delay
 
 @Composable
-fun Splash(navigateToHome: () -> Unit){
-    LaunchedEffect(Unit) {
-        delay(3000)
-        navigateToHome()
-    }
-
+fun Splash(){
     Box(
         modifier = Modifier
             .fillMaxSize()
