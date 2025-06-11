@@ -31,29 +31,32 @@ fun AppRoute() {
     val authUiState by authViewModel.uiState.collectAsStateWithLifecycle()
 
     // Handle navigation based on auth state changes
-    LaunchedEffect(authUiState.isAuthenticated, authUiState.currentUser) {
-        // Only navigate if user is authenticated and we have user data
-        if (authUiState.isAuthenticated && authUiState.currentUser != null) {
-            val user = authUiState.currentUser!!
-
+    LaunchedEffect(authUiState.isAuthenticated, authUiState.currentUser, authUiState.isLoading) {
+        // Wait for auth loading to complete
+        if (!authUiState.isLoading) {
             when {
-                !user.hasAllApiKeys() -> {
-                    // User is authenticated but missing API keys - go to setup
-                    navController.navigate("ApiKeySetup") {
+                authUiState.isAuthenticated && authUiState.currentUser != null -> {
+                    val user = authUiState.currentUser!!
+
+                    if (!user.hasAllApiKeys()) {
+                        // User is authenticated but missing API keys - go to setup
+                        navController.navigate("ApiKeySetup") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    } else {
+                        // User is authenticated and has API keys - go to home
+                        navController.navigate("Home") {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                }
+                !authUiState.isAuthenticated -> {
+                    // User is not authenticated - go to login
+                    navController.navigate("Login") {
                         popUpTo(0) { inclusive = true }
                     }
                 }
-                else -> {
-                    // User is authenticated and has API keys - go to home
-                    navController.navigate("Home") {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
-            }
-        } else if (!authUiState.isAuthenticated && !authUiState.isLoading) {
-            // User is not authenticated and not loading - go to login
-            navController.navigate("Login") {
-                popUpTo(0) { inclusive = true }
+                // If still loading, stay on splash
             }
         }
     }
@@ -62,11 +65,11 @@ fun AppRoute() {
         navController = navController,
         startDestination = "Splash"
     ) {
-        // Splash Screen
+        // Splash Screen - Remove the navigation callback
         composable("Splash") {
             Splash {
-                // Splash will automatically navigate based on auth state
-                // through the LaunchedEffect above
+                // Remove this navigation - let LaunchedEffect handle it
+                // The splash will automatically navigate based on auth state
             }
         }
 
