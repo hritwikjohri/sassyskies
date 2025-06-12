@@ -2,28 +2,31 @@ package com.hritwik.sassyskies.core
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.hritwik.sassyskies.screen.weather.DetailedWeatherScreen
-import com.hritwik.sassyskies.screen.info.DeveloperInfoScreen
-import com.hritwik.sassyskies.screen.weather.ForecastScreen
-import com.hritwik.sassyskies.screen.weather.Home
 import com.hritwik.sassyskies.screen.auth.ApiKeySetupScreen
 import com.hritwik.sassyskies.screen.auth.ForgotPasswordScreen
 import com.hritwik.sassyskies.screen.auth.LoginScreen
 import com.hritwik.sassyskies.screen.auth.SignUpScreen
+import com.hritwik.sassyskies.screen.components.Profile
+import com.hritwik.sassyskies.screen.info.DeveloperInfoScreen
+import com.hritwik.sassyskies.screen.weather.DetailedWeatherScreen
+import com.hritwik.sassyskies.screen.weather.ForecastScreen
+import com.hritwik.sassyskies.screen.weather.Home
+import com.hritwik.sassyskies.viewmodel.ApiKeyViewModel
 import com.hritwik.sassyskies.viewmodel.AuthViewModel
-import com.hritwik.sassyskies.viewmodel.WeatherViewModel
 import com.hritwik.sassyskies.viewmodel.ForecastViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.hritwik.sassyskies.viewmodel.WeatherViewModel
 
 @Composable
 fun AppRoute(
     startDestination: String,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    apiKeyViewModel: ApiKeyViewModel
 ) {
     val navController = rememberNavController()
 
@@ -84,6 +87,9 @@ fun AppRoute(
                 onNavigateToDetailedWeather = {
                     navController.navigate("DetailedWeather")
                 },
+                onNavigateToProfile = {
+                    navController.navigate("Profile")
+                },
                 onNavigateToDeveloperInfo = {
                     navController.navigate("DeveloperInfo")
                 },
@@ -138,6 +144,22 @@ fun AppRoute(
             ApiKeySetupScreen(
                 onSetupComplete = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable("Profile") {
+            Profile(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                authViewModel = authViewModel,
+                apiKeyViewModel = apiKeyViewModel,
+                onNavigateToApiKeys = {
+                    navController.navigate("ApiKeySetup")
+                },
+                onSignOut = {
+                    authViewModel.signOut()
                 }
             )
         }

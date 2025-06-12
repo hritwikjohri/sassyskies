@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hritwik.sassyskies.core.AppRoute
 import com.hritwik.sassyskies.screen.Splash
 import com.hritwik.sassyskies.ui.theme.SassySkiesTheme
+import com.hritwik.sassyskies.viewmodel.ApiKeyViewModel
 import com.hritwik.sassyskies.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
+    private val apiKeyViewModel: ApiKeyViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +54,8 @@ class MainActivity : ComponentActivity() {
                 } else {
                     AppRoute(
                         startDestination = initialRoute!!,
-                        authViewModel = authViewModel
+                        authViewModel = authViewModel,
+                        apiKeyViewModel = apiKeyViewModel
                     )
                 }
             }

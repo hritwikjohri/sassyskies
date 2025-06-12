@@ -17,8 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -60,9 +60,6 @@ import com.hritwik.sassyskies.screen.components.AnimatedIcon
 import com.hritwik.sassyskies.ui.theme.JosefinSans
 import com.hritwik.sassyskies.ui.theme.WeatherTypography
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,11 +69,11 @@ fun WeatherContent(
     sarcasticMessage: String,
     selectedMemeVersion: MemeVersion = MemeVersion.GLOBAL,
     onRefreshClick: () -> Unit = {},
-    onLocationClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
     onMemeVersionChanged: (MemeVersion) -> Unit = {},
     onDetailedWeatherClick: () -> Unit = {},
-    onDeveloperInfoClick: () -> Unit = {},
-    onForecastClick: () -> Unit = {}
+    onForecastClick: () -> Unit = {},
+    onDevInfoClick: () -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -111,14 +108,13 @@ fun WeatherContent(
             topBar = {
                 WeatherTopAppBar(
                     location = weather.name,
-                    lastUpdated = Date(weather.dt * 1000L),
                     onRefreshClick = onRefreshClick,
-                    onLocationClick = onLocationClick,
+                    onProfileClick = onProfileClick,
                     onOptionsClick = {
                         scope.launch { drawerState.open() }
                     },
-                    onDeveloperInfoClick = onDeveloperInfoClick,
-                    onForecastClick = onForecastClick
+                    onForecastClick = onForecastClick,
+                    onDevInfoClick = onDevInfoClick
                 )
             },
             bottomBar = {
@@ -139,15 +135,11 @@ fun WeatherContent(
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Weather Icon
                 AnimatedIcon(
                     weather = weather,
                     modifier = Modifier.size(120.dp)
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Create annotated string with highlighted keywords
                 val annotatedMessage = buildAnnotatedString {
                     val words = sarcasticMessage.split(" ")
                     words.forEachIndexed { index, word ->
@@ -173,7 +165,6 @@ fun WeatherContent(
 
                 Spacer(modifier = Modifier.weight(0.5f))
 
-                // Temperature display
                 Text(
                     text = "${weather.main.temp.roundToInt()}°",
                     style = WeatherTypography.MainTemperature,
@@ -181,7 +172,6 @@ fun WeatherContent(
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                // Dynamic sarcastic message with calculated font size
                 Text(
                     text = annotatedMessage,
                     fontFamily = JosefinSans,
@@ -202,56 +192,37 @@ fun WeatherContent(
 @Composable
 private fun WeatherTopAppBar(
     location: String,
-    lastUpdated: Date,
     onRefreshClick: () -> Unit,
-    onLocationClick: () -> Unit,
+    onProfileClick: () -> Unit,
     onOptionsClick: () -> Unit,
-    onDeveloperInfoClick: () -> Unit = {},
-    onForecastClick: () -> Unit
-) {
-    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    onForecastClick: () -> Unit,
+    onDevInfoClick: () -> Unit,
 
+) {
     TopAppBar(
         title = {
-            Column(
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        contentDescription = "Location",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = location,
-                        fontFamily = JosefinSans,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                Text(
-                    text = "Updated ${timeFormat.format(lastUpdated)}",
-                    fontFamily = JosefinSans,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Text(
+                text = location,
+                fontFamily = JosefinSans,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         },
         actions = {
-            // Add a details button
-            IconButton(onClick = onDeveloperInfoClick) {
+            IconButton(onClick = onDevInfoClick) {
                 Icon(
                     imageVector = Icons.Default.Info,
-                    contentDescription = "Dev Details",
+                    contentDescription = "Dev Info",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            IconButton(onClick = onProfileClick) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "User Profile",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -259,13 +230,6 @@ private fun WeatherTopAppBar(
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = "7-Day Forecast",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            IconButton(onClick = onLocationClick) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Change Location",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -335,11 +299,6 @@ private fun MemeVersionDrawer(
             MemeVersionOption(
                 title = "Global Sass",
                 description = "International sarcasm with no boundaries. Brutal and universal.",
-                examples = listOf(
-                    "\"It's fucking raining. Now you know.\"",
-                    "\"Satan's armpit is cooler than this.\"",
-                    "\"Weather so shitty even clouds are embarrassed.\""
-                ),
                 isSelected = selectedVersion == MemeVersion.GLOBAL,
                 onClick = { onVersionSelected(MemeVersion.GLOBAL) }
             )
@@ -350,11 +309,6 @@ private fun MemeVersionDrawer(
             MemeVersionOption(
                 title = "Desi Tadka",
                 description = "Indian memes and slang. Relatable, funny, and totally bindass!",
-                examples = listOf(
-                    "\"Yaar ye kya barish hai, Mumbai local jaisi crowded!\"",
-                    "\"Garmi itni hai ki AC bhi ghar jaana chahta hai.\"",
-                    "\"Humidity level: Rajasthani summer wedding level.\""
-                ),
                 isSelected = selectedVersion == MemeVersion.INDIAN,
                 onClick = { onVersionSelected(MemeVersion.INDIAN) }
             )
@@ -379,7 +333,6 @@ private fun MemeVersionDrawer(
 private fun MemeVersionOption(
     title: String,
     description: String,
-    examples: List<String>,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -441,35 +394,6 @@ private fun MemeVersionOption(
                     MaterialTheme.colorScheme.onSurfaceVariant
                 }
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "Examples:",
-                fontFamily = JosefinSans,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = if (isSelected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurface
-                }
-            )
-
-            examples.forEach { example ->
-                Text(
-                    text = "• $example",
-                    fontFamily = JosefinSans,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = if (isSelected) {
-                        MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
-                    },
-                    modifier = Modifier.padding(top = 2.dp, start = 8.dp)
-                )
-            }
         }
     }
 }

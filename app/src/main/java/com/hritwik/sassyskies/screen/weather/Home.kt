@@ -25,6 +25,7 @@ import com.hritwik.sassyskies.screen.components.WeatherErrorContent
 fun Home(
     weatherViewModel: WeatherViewModel = hiltViewModel(),
     onNavigateToDetailedWeather: (() -> Unit)? = null,
+    onNavigateToProfile: (() -> Unit)? = null,
     onNavigateToDeveloperInfo: (() -> Unit)? = null,
     onNavigateToForecast: ((Double, Double) -> Unit)? = null
 ) {
@@ -87,17 +88,14 @@ fun Home(
                         )
                     }
                 },
-                onLocationClick = {
-                    locationViewModel.getCurrentLocation()
+                onProfileClick = {
+                    onNavigateToProfile?.invoke()
                 },
                 onDetailedWeatherClick = {
                     onNavigateToDetailedWeather?.invoke()
                 },
                 onMemeVersionChanged = { version ->
                     weatherViewModel.setMemeVersion(version)
-                },
-                onDeveloperInfoClick = {
-                    onNavigateToDeveloperInfo?.invoke()
                 },
                 onForecastClick = {
                     locationUiState.location?.let { location ->
@@ -106,6 +104,9 @@ fun Home(
                             location.longitude
                         )
                     }
+                },
+                onDevInfoClick = {
+                    onNavigateToDeveloperInfo?.invoke()
                 }
             )
         }
