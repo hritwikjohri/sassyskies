@@ -1,11 +1,7 @@
 package com.hritwik.sassyskies.core
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,7 +11,6 @@ import com.hritwik.sassyskies.screen.weather.DetailedWeatherScreen
 import com.hritwik.sassyskies.screen.info.DeveloperInfoScreen
 import com.hritwik.sassyskies.screen.weather.ForecastScreen
 import com.hritwik.sassyskies.screen.weather.Home
-import com.hritwik.sassyskies.screen.Splash
 import com.hritwik.sassyskies.screen.auth.ApiKeySetupScreen
 import com.hritwik.sassyskies.screen.auth.ForgotPasswordScreen
 import com.hritwik.sassyskies.screen.auth.LoginScreen
@@ -23,54 +18,19 @@ import com.hritwik.sassyskies.screen.auth.SignUpScreen
 import com.hritwik.sassyskies.viewmodel.AuthViewModel
 import com.hritwik.sassyskies.viewmodel.WeatherViewModel
 import com.hritwik.sassyskies.viewmodel.ForecastViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun AppRoute() {
+fun AppRoute(
+    startDestination: String,
+    authViewModel: AuthViewModel
+) {
     val navController = rememberNavController()
-    val authViewModel: AuthViewModel = hiltViewModel()
-    val authUiState by authViewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(authUiState.isAuthenticated, authUiState.currentUser) {
-        when {
-            !authUiState.isAuthenticated -> {
-                // User is not authenticated, navigate to login
-                navController.navigate("Login") {
-                    popUpTo("Splash") { inclusive = true }
-                    popUpTo("Home") { inclusive = true }
-                    popUpTo("ApiKeySetup") { inclusive = true }
-                }
-            }
-            authUiState.isAuthenticated && authUiState.currentUser?.hasAllApiKeys() != true -> {
-                // User is authenticated but doesn't have API keys
-                navController.navigate("ApiKeySetup") {
-                    popUpTo("Splash") { inclusive = true }
-                    popUpTo("Login") { inclusive = true }
-                    popUpTo("SignUp") { inclusive = true }
-                    popUpTo("ForgotPassword") { inclusive = true }
-                }
-            }
-            authUiState.isAuthenticated && authUiState.currentUser?.hasAllApiKeys() == true -> {
-                // User is authenticated and has API keys
-                navController.navigate("Home") {
-                    popUpTo("Splash") { inclusive = true }
-                    popUpTo("Login") { inclusive = true }
-                    popUpTo("SignUp") { inclusive = true }
-                    popUpTo("ForgotPassword") { inclusive = true }
-                    popUpTo("ApiKeySetup") { inclusive = true }
-                }
-            }
-        }
-    }
 
     NavHost(
         navController = navController,
-        startDestination = "Splash" // Always start with splash
+        startDestination = startDestination
     ) {
-        // Splash Screen
-        composable("Splash") {
-            Splash()
-        }
-
         // Authentication Screens
         composable("Login") {
             LoginScreen(
@@ -109,7 +69,7 @@ fun AppRoute() {
             ApiKeySetupScreen(
                 onSetupComplete = {
                     navController.navigate("Home") {
-                        popUpTo("ApiKeySetup") { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 }
             )
@@ -130,7 +90,6 @@ fun AppRoute() {
                 onNavigateToForecast = { latitude, longitude ->
                     navController.navigate("Forecast/$latitude/$longitude")
                 }
-
             )
         }
 
@@ -174,7 +133,6 @@ fun AppRoute() {
                 }
             )
         }
-
 
         composable("ManageApiKeys") {
             ApiKeySetupScreen(
