@@ -1,6 +1,7 @@
 package com.hritwik.sassyskies.core
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,13 +30,41 @@ fun AppRoute() {
     val authViewModel: AuthViewModel = hiltViewModel()
     val authUiState by authViewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(authUiState.isAuthenticated, authUiState.currentUser) {
+        when {
+            !authUiState.isAuthenticated -> {
+                // User is not authenticated, navigate to login
+                navController.navigate("Login") {
+                    popUpTo("Splash") { inclusive = true }
+                    popUpTo("Home") { inclusive = true }
+                    popUpTo("ApiKeySetup") { inclusive = true }
+                }
+            }
+            authUiState.isAuthenticated && authUiState.currentUser?.hasAllApiKeys() != true -> {
+                // User is authenticated but doesn't have API keys
+                navController.navigate("ApiKeySetup") {
+                    popUpTo("Splash") { inclusive = true }
+                    popUpTo("Login") { inclusive = true }
+                    popUpTo("SignUp") { inclusive = true }
+                    popUpTo("ForgotPassword") { inclusive = true }
+                }
+            }
+            authUiState.isAuthenticated && authUiState.currentUser?.hasAllApiKeys() == true -> {
+                // User is authenticated and has API keys
+                navController.navigate("Home") {
+                    popUpTo("Splash") { inclusive = true }
+                    popUpTo("Login") { inclusive = true }
+                    popUpTo("SignUp") { inclusive = true }
+                    popUpTo("ForgotPassword") { inclusive = true }
+                    popUpTo("ApiKeySetup") { inclusive = true }
+                }
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
-        startDestination = if (authUiState.isAuthenticated){
-            "Home"
-        } else {
-            "Splash"
-        }
+        startDestination = "Splash" // Always start with splash
     ) {
         // Splash Screen
         composable("Splash") {
