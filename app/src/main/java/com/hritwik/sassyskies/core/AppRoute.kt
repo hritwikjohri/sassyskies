@@ -127,12 +127,10 @@ fun AppRoute() {
                 onNavigateToDeveloperInfo = {
                     navController.navigate("DeveloperInfo")
                 },
-                onNavigateToForecast = { latitude, longitude, errorStates ->
-                    // Pass error states as navigation arguments
-                    navController.navigate(
-                        "Forecast/$latitude/$longitude/${errorStates.hasLocationPermission}/${errorStates.locationError ?: "null"}/${errorStates.weatherError ?: "null"}"
-                    )
+                onNavigateToForecast = { latitude, longitude ->
+                    navController.navigate("Forecast/$latitude/$longitude")
                 }
+
             )
         }
 
@@ -151,20 +149,14 @@ fun AppRoute() {
         }
 
         composable(
-            "Forecast/{latitude}/{longitude}/{hasPermission}/{locationError}/{weatherError}",
+            "Forecast/{latitude}/{longitude}",
             arguments = listOf(
                 navArgument("latitude") { type = NavType.FloatType },
-                navArgument("longitude") { type = NavType.FloatType },
-                navArgument("hasPermission") { type = NavType.BoolType },
-                navArgument("locationError") { type = NavType.StringType },
-                navArgument("weatherError") { type = NavType.StringType }
+                navArgument("longitude") { type = NavType.FloatType }
             )
         ) { backStackEntry ->
             val latitude = backStackEntry.arguments?.getFloat("latitude")?.toDouble() ?: 0.0
             val longitude = backStackEntry.arguments?.getFloat("longitude")?.toDouble() ?: 0.0
-            val hasPermission = backStackEntry.arguments?.getBoolean("hasPermission") != false
-            val locationError = backStackEntry.arguments?.getString("locationError")?.takeIf { it != "null" }
-            val weatherError = backStackEntry.arguments?.getString("weatherError")?.takeIf { it != "null" }
 
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry("Home")
@@ -177,30 +169,12 @@ fun AppRoute() {
                 weatherViewModel = weatherViewModel,
                 latitude = latitude,
                 longitude = longitude,
-                hasLocationPermission = hasPermission,
-                locationError = locationError,
-                weatherError = weatherError,
                 onBackClick = {
-                    navController.popBackStack()
-                },
-                onRetryPermission = {
-                    // Navigate back to home to retry permission
-                    navController.popBackStack()
-                },
-                onRetryLocation = {
-                    // Navigate back to home to retry location
-                    navController.popBackStack()
-                },
-                onUseDefaultLocation = {
-                    // Navigate back to home with default location
-                    navController.popBackStack()
-                },
-                onRetryWeather = {
-                    // Navigate back to home to retry weather
                     navController.popBackStack()
                 }
             )
         }
+
 
         composable("ManageApiKeys") {
             ApiKeySetupScreen(

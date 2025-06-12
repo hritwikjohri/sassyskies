@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hritwik.sassyskies.model.utils.ErrorStates
 import com.hritwik.sassyskies.viewmodel.WeatherViewModel
 import com.hritwik.sassyskies.viewmodel.LocationViewModel
 import com.hritwik.sassyskies.viewmodel.LocationViewModelFactory
@@ -27,7 +26,7 @@ fun Home(
     weatherViewModel: WeatherViewModel = hiltViewModel(),
     onNavigateToDetailedWeather: (() -> Unit)? = null,
     onNavigateToDeveloperInfo: (() -> Unit)? = null,
-    onNavigateToForecast: ((Double, Double, ErrorStates) -> Unit)? = null
+    onNavigateToForecast: ((Double, Double) -> Unit)? = null
 ) {
     val context = LocalContext.current
 
@@ -72,13 +71,6 @@ fun Home(
         }
     }
 
-    // Create error states to pass to forecast
-    val errorStates = ErrorStates(
-        hasLocationPermission = hasLocationPermission,
-        locationError = locationUiState.errorMessage,
-        weatherError = weatherUiState.error
-    )
-
     // Use full screen for weather content, centered layout for loading/error states
     when {
         weatherUiState.weatherData != null -> {
@@ -111,8 +103,7 @@ fun Home(
                     locationUiState.location?.let { location ->
                         onNavigateToForecast?.invoke(
                             location.latitude,
-                            location.longitude,
-                            errorStates
+                            location.longitude
                         )
                     }
                 }

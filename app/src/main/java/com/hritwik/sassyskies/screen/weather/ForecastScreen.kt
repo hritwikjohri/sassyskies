@@ -22,19 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hritwik.sassyskies.model.utils.MemeVersion
+import com.hritwik.sassyskies.model.weather.core.WeatherResponse
+import com.hritwik.sassyskies.model.weather.data.DailyForecast
 import com.hritwik.sassyskies.model.weather.detail.Clouds
 import com.hritwik.sassyskies.model.weather.detail.Coord
-import com.hritwik.sassyskies.model.weather.data.DailyForecast
 import com.hritwik.sassyskies.model.weather.detail.Main
-import com.hritwik.sassyskies.model.utils.MemeVersion
 import com.hritwik.sassyskies.model.weather.detail.Sys
 import com.hritwik.sassyskies.model.weather.detail.Weather
 import com.hritwik.sassyskies.model.weather.detail.Wind
-import com.hritwik.sassyskies.model.weather.core.WeatherResponse
 import com.hritwik.sassyskies.screen.components.AnimatedIcon
-import com.hritwik.sassyskies.screen.components.LocationErrorContent
-import com.hritwik.sassyskies.screen.components.WeatherErrorContent
-import com.hritwik.sassyskies.screen.components.PermissionDeniedContent
 import com.hritwik.sassyskies.ui.theme.JosefinSans
 import com.hritwik.sassyskies.viewmodel.ForecastViewModel
 import com.hritwik.sassyskies.viewmodel.WeatherViewModel
@@ -47,15 +44,7 @@ fun ForecastScreen(
     weatherViewModel: WeatherViewModel,
     latitude: Double,
     longitude: Double,
-    onBackClick: () -> Unit,
-    // New parameters for error states
-    hasLocationPermission: Boolean = true,
-    locationError: String? = null,
-    weatherError: String? = null,
-    onRetryPermission: () -> Unit = {},
-    onRetryLocation: () -> Unit = {},
-    onUseDefaultLocation: () -> Unit = {},
-    onRetryWeather: () -> Unit = {}
+    onBackClick: () -> Unit
 ) {
     val forecastUiState by forecastViewModel.uiState.collectAsStateWithLifecycle()
     val selectedMemeVersion by weatherViewModel.memeVersion.collectAsStateWithLifecycle()
@@ -63,29 +52,9 @@ fun ForecastScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // State for dismissing overlays
-    var showPermissionError by remember { mutableStateOf(!hasLocationPermission) }
-    var showLocationError by remember { mutableStateOf(locationError != null) }
-    var showWeatherError by remember { mutableStateOf(weatherError != null) }
-
-    // Update error states when props change
-    LaunchedEffect(hasLocationPermission) {
-        showPermissionError = !hasLocationPermission
-    }
-
-    LaunchedEffect(locationError) {
-        showLocationError = locationError != null
-    }
-
-    LaunchedEffect(weatherError) {
-        showWeatherError = weatherError != null
-    }
-
     // Load forecast data when screen opens
     LaunchedEffect(latitude, longitude, selectedMemeVersion) {
-        if (hasLocationPermission && locationError == null) {
-            forecastViewModel.getForecast(latitude, longitude, selectedMemeVersion)
-        }
+        forecastViewModel.getForecast(latitude, longitude, selectedMemeVersion)
     }
 
     // Update meme version when it changes in weather view model
@@ -152,7 +121,6 @@ fun ForecastScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                // Main Content
                 when {
                     forecastUiState.isLoading -> {
                         Box(
@@ -232,60 +200,6 @@ fun ForecastScreen(
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                         }
-                    }
-                }
-
-                // Error Overlays (Non-blocking)
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.TopCenter)
-                        .padding(top = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    // Permission Denied Overlay
-                    if (showPermissionError) {
-                        PermissionDeniedContent(
-                            onRetryPermission = {
-                                onRetryPermission()
-                                showPermissionError = false
-                            },
-                            onDismiss = {
-                                showPermissionError = false
-                            }
-                        )
-                    }
-
-                    // Location Error Overlay
-                    if (showLocationError && locationError != null) {
-                        LocationErrorContent(
-                            errorMessage = locationError,
-                            onRetryLocation = {
-                                onRetryLocation()
-                                showLocationError = false
-                            },
-                            onUseDefaultLocation = {
-                                onUseDefaultLocation()
-                                showLocationError = false
-                            },
-                            onDismiss = {
-                                showLocationError = false
-                            }
-                        )
-                    }
-
-                    // Weather Error Overlay
-                    if (showWeatherError && weatherError != null) {
-                        WeatherErrorContent(
-                            sarcasticMessage = weatherError,
-                            onRetryWeather = {
-                                onRetryWeather()
-                                showWeatherError = false
-                            },
-                            onDismiss = {
-                                showWeatherError = false
-                            }
-                        )
                     }
                 }
             }
